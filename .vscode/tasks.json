@@ -6,27 +6,56 @@
         "shell": {
             "executable": "bash",
             "args": [
-                "-c"
+                "-ic"
             ]
         }
     },
     "tasks": [
         {
             "label": "xv6 Docker Build",
-            "type": "process",
+            "type": "shell",
             "command": "docker",
-            "args": ["run", "-v", "/Users/vincentscomputer/Library/Mobile Documents/com~apple~CloudDocs/Tandon/Spring 2019/OS/xv6-public/:/home/root/xv6-public/", "-dt", "--name", "xv6", "xv6"]
+            "args": [
+                "run",
+                "-v",
+                "${workspaceFolder}:/home/root/xv6-public/",
+                "-p",
+                "25000:25000/tcp",
+                "-dt",
+                "--name",
+                "xv6",
+                "xv6"
+            ]
         },
         {
             "label": "xv6 Docker Start",
             "type": "process",
             "command": "docker",
-            "args": ["start", "xv6", "bash"]
+            "args": [
+                "start",
+                "xv6"
+            ]
+        },
+        {
+            "label": "xv6 Make",
+            "type": "shell",
+            "command": [
+                "docker exec -it -w /home/root/xv6-public xv6 bash -c 'make clean && make qemu-nox'"
+            ]
         },
         {
             "label": "xv6 Run",
             "type": "shell",
-            "command": ["docker exec -it -w /home/root/xv6-public xv6 bash -c 'make qemu-nox'"]
+            "command": [
+                "docker exec -it -w /home/root/xv6-public xv6 bash -c 'make qemu-nox'"
+            ]
+        },
+        {
+            "label": "xv6 Debug",
+            "type": "shell",
+            "command": [
+                "docker exec -it -w /home/root/xv6-public xv6 bash -c 'make qemu-nox-gdb'"
+            ]
         }
     ]
 }
