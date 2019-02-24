@@ -11,11 +11,9 @@ void head(int fd, uint limit)
 
     while ((n = read(fd, buff, sizeof(buff))) > 0)
     {
-        for (i = 0, start = 0, numBytes=1; i < n; i++, numBytes++) // beginning of arr, numBytes gets inited to 1 since the first element is 1 byte
+        for (i = 0, start = 0, numBytes=1; i < n; i++, numBytes++) // beginning of arr, numBytes gets initialized to 1 since the first element is 1 byte
         {
-            if (i > n) // greater than file
-                return;
-            else if (buff[i] == '\n') // apparently the first char is considered a newline
+            if (buff[i] == '\n') // if the char is a newline
             {
                 lines++;
                 if (write(1, &buff[start], numBytes) != numBytes) // write from certain index until numBytes
@@ -27,7 +25,7 @@ void head(int fd, uint limit)
                 if (lines >= limit)
                     return;
                 start = i+1; // move ahead one index to after newline
-                numBytes = 0;
+                numBytes = 0; // reset numBytes (numBytes will immediately become 1 on next iteration)
             } 
             else if (i == n-1) { // end of arr reached
                 if (write(1, &buff[start], n - start) != n - start) // write from certain index until n - 1 which is the end of the array
