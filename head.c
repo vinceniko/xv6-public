@@ -28,7 +28,7 @@ void head(int fd, uint limit)
                 numBytes = 0; // reset numBytes (numBytes will immediately become 1 on next iteration)
             } 
             else if (i == n-1) { // end of arr reached
-                if (write(1, &buff[start], n - start) != n - start) // write from certain index until n - 1 which is the end of the array
+                if (write(1, &buff[start], n - start) != n - start) // write from certain index until n which is the end of the array
                 {
                     printf(1, "head: write error\n");
                     exit();
