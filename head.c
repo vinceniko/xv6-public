@@ -56,6 +56,15 @@ int main(int argc, char *argv[])
     else if (*argv[param] == '-') // if second param starts with '-'
     {
         limit = atoi(++argv[param]); // increment to remove '-' and convert further bytes to int
+         if ((*argv[param]) == '0')
+        {
+            exit();
+        }
+        if (limit < 0) // non number following '-'
+        {
+            printf(1, "non-valid value following -\n");
+            exit();
+        }
         if (argc <= 2) // no file, only head and -n
         {
             head(0, limit);
