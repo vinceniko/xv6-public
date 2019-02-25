@@ -60,9 +60,9 @@ int main(int argc, char *argv[])
         {
             exit();
         }
-        if (limit < 0) // non number following '-'
+        if (limit == 0) // non-valed number following '-'
         {
-            printf(1, "non-valid value following -\n");
+            printf(1, "head: non-valid number following -\n");
             exit();
         }
         if (argc <= 2) // no file, only head and -n
