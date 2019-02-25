@@ -46,22 +46,32 @@ void head(int fd, uint limit)
 
 int main(int argc, char *argv[])
 {
-    int fd, i;
+    int fd, i, param = 1, limit = 10; // param initialized to 1 since 0th param (as an index) is the program name, limit default is 10
 
-    if (argc <= 1)
+    if (argc <= 1) // only head
     {
-        head(0, 10);
+        head(0, limit);
         exit();
     }
+    else if (*argv[param] == '-') // if second param starts with '-'
+    {
+        limit = atoi(++argv[param]); // increment to remove '-' and convert further bytes to int
+        if (argc <= 2) // no file, only head and -n
+        {
+            head(0, limit);
+            exit();
+        }
+        ++param; // move onto third param (file)
+    }
 
-    for (i = 1; i < argc; i++)
+    for (i = param; i < argc; i++) // 1 or more file params to head
     {
         if ((fd = open(argv[i], 0)) < 0)
         {
             printf(1, "head: cannot open %s\n", argv[i]);
             exit();
         }
-        head(fd, 10);
+        head(fd, limit);
         close(fd);
     }
     exit();
