@@ -44,6 +44,18 @@ void head(int fd, uint limit)
     }
 }
 
+ushort
+notValid(char *arr) // checks if string contains a non number
+{
+    int i;
+    for (i = 0; i < strlen(arr); i++)
+    {
+        if (arr[i] < '0' || arr[i] > '9') // non number
+            return arr[i]; // not Valid number
+    }
+    return 0; // valid
+}
+
 int main(int argc, char *argv[])
 {
     int fd, i, param = 1, limit = 10; // param initialized to 1 since 0th param (as an index) is the program name, limit default is 10
@@ -55,16 +67,12 @@ int main(int argc, char *argv[])
     }
     else if (*argv[param] == '-') // if second param starts with '-'
     {
-        argv[param]++; // increment to remove '-' and convert further bytes to int
-        printf(1, argv[param]);
-        int i; 
-        for (i = 0; i < sizeof(argv[param])/sizeof(char); i++)
-        {
-            if (argv[param][i] < '0' || argv[param][i] > '9')
-            {
-                printf(1, "head: non-valid number following -\n");
-                exit();
-            }
+        argv[param]++; // increment to remove '-'
+        // printf(1, "%s|%d|%d\n", argv[param], *argv[param], strlen(argv[param]));
+        char sym;
+        if ((sym = notValid(argv[param]))) {
+            printf(1, "head: non-valid number in nLines flag: '%c'\n", sym);
+            exit();
         }
         limit = atoi(argv[param]);
         if (argc <= 2) // no file, only head and -n
