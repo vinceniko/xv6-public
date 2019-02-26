@@ -13,7 +13,9 @@ void head(int fd, uint limit)
     {
         for (i = 0, start = 0, numBytes=1; i < n; i++, numBytes++) // beginning of arr, numBytes gets initialized to 1 since the first element is 1 byte
         {
-            if (buff[i] == '\n') // if the char is a newline
+            if (lines >= limit) // checked outside of below conditional in the case that limit is 0
+                return;          // terminate because limit passed
+            else if (buff[i] == '\n') // if the char is a newline
             {
                 lines++;
                 if (write(1, &buff[start], numBytes) != numBytes) // write from certain index until numBytes
@@ -22,8 +24,6 @@ void head(int fd, uint limit)
                     exit();
                 }
                 // printf(1, "| Line #%d |", lines);
-                if (lines >= limit)
-                    return;
                 start = i+1; // move ahead one index to after newline
                 numBytes = 0; // reset numBytes (numBytes will immediately become 1 on next iteration)
             } 
