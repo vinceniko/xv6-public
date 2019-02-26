@@ -23,7 +23,6 @@ void head(int fd, uint limit)
                     printf(1, "head: write error\n");
                     exit();
                 }
-                // printf(1, "| Line #%d |", lines);
                 start = i+1; // move ahead one index to after newline
                 numBytes = 0; // reset numBytes (numBytes will immediately become 1 on next iteration)
             } 
@@ -33,7 +32,6 @@ void head(int fd, uint limit)
                     printf(1, "head: write error\n");
                     exit();
                 }
-                // printf(1, "| New Arr #%d |");
             }
         }
     }
@@ -68,7 +66,6 @@ int main(int argc, char *argv[])
     else if (*argv[param] == '-') // if second param starts with '-'
     {
         argv[param]++; // increment to remove '-'
-        // printf(1, "%s|%d|%d\n", argv[param], *argv[param], strlen(argv[param]));
         char sym;
         if ((sym = notValid(argv[param]))) {
             printf(1, "head: non-valid number in nLines flag: '%c'\n", sym);
