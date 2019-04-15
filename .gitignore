@@ -17,3 +17,9 @@ mkfs
 
 TEST
 .vscode/launch.json
+partner.txt
+
+*.icloud
+
+*.bin
+*.ipch
