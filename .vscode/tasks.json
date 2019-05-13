@@ -1,0 +1,60 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "options": {
+        "shell": {
+            "executable": "bash",
+            "args": [
+                "-ic"
+            ]
+        }
+    },
+    "tasks": [{
+            "label": "xv6 Docker Build",
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "run",
+                "-v",
+                "${workspaceFolder}:/home/root/xv6-public/",
+                "-p",
+                "25000:25000/tcp",
+                "-dt",
+                "--name",
+                "xv6",
+                "xv6"
+            ]
+        },
+        {
+            "label": "xv6 Docker Start",
+            "type": "process",
+            "command": "docker",
+            "args": [
+                "start",
+                "xv6"
+            ]
+        },
+        {
+            "label": "xv6 Make",
+            "type": "shell",
+            "command": [
+                "docker exec -it -w /home/root/xv6-public xv6 bash -c 'make clean && make qemu-nox'"
+            ]
+        },
+        {
+            "label": "xv6 Run",
+            "type": "shell",
+            "command": [
+                "docker exec -it -w /home/root/xv6-public xv6 bash -c 'make qemu-nox'"
+            ]
+        },
+        {
+            "label": "xv6 Debug",
+            "type": "shell",
+            "command": [
+                "docker exec -it -w /home/root/xv6-public xv6 bash -c 'make qemu-nox-gdb'"
+            ]
+        }
+    ]
+}

@@ -17,3 +17,5 @@ mkfs
 
 *.ipch
 *.bin
+*.patch
+*.DS_Store
