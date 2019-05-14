@@ -77,7 +77,7 @@ void tail(int fd, uint limit)
                 start = i + 1; // move ahead one index to after newline
                 numBytes = 0;  // reset numBytes (numBytes will immediately become 1 on next iteration)
 
-                addLine(&lines, line);
+                appendLast(&lines, line);
             }
         }
     }
