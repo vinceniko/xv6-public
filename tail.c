@@ -29,7 +29,8 @@ void appendLast(struct Cyclic_Arr *lines, char *const line)
 {
     char *lastLine = lines->arr[getLast(lines)];
     char *newLine = malloc(strlen(lastLine) + strlen(line) + 1); // + 1 for null
-    strcat(lastLine, newLine);
+    strcat(newLine, lastLine);
+    strcat(newLine, line);
 }
 
 void printLines(struct Cyclic_Arr *const lines)
