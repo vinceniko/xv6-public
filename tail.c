@@ -19,8 +19,7 @@ void addElem(struct CircularArr *lines, void *const line)
     // free(lines->arr[lines->index]);
     // lines->arr[lines->index] = NULL;
     lines->arr[lines->index] = line;
-    if (++lines->index >= lines->size)
-        lines->index = 0;
+    lines->index = (lines->index + 1) % lines->size; // loops around
 }
 
 // retuns the index of the last inserted elem
@@ -73,8 +72,7 @@ void printInOrder(struct CircularArr *const lines)
     while (i != start || first) // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
     {
         printf(1, "%s", lines->arr[i]);
-        if (++i >= lines->size)
-            i = 0;
+        i = (i + 1) % lines->size; // loops around
         first = 0;
     }
 }
@@ -96,7 +94,7 @@ void tail(int fd, uint limit)
         limit,
         0,
     }; // allocate an arr of size limit which stores lines
-    init(&lines);
+    // init(&lines);
 
     while ((n = read(fd, buff, sizeof(buff))) > 0)
     {
