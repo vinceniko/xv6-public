@@ -11,7 +11,7 @@ struct Cyclic_Arr
     uint index; // refers to next free spot
 };
 
-void addLine(struct Cyclic_Arr *lines, void *const line)
+void addElem(struct Cyclic_Arr *lines, void *const line)
 {
     lines->arr[lines->index] = line;
     if (++lines->index >= lines->size)
@@ -33,7 +33,7 @@ void appendLast(struct Cyclic_Arr *lines, char *const line)
     strcat(newLine, line);
 }
 
-void printLines(struct Cyclic_Arr *const lines)
+void printInOrder(struct Cyclic_Arr *const lines)
 {
     int i, start;
     i = start = lines->index;
@@ -68,7 +68,7 @@ void tail(int fd, uint limit)
                 start = i + 1; // move ahead one index to after newline
                 numBytes = 0;  // reset numBytes (numBytes will immediately become 1 on next iteration)
 
-                addLine(&lines, line);
+                addElem(&lines, line);
             }
             else if (i == n - 1)
             { // end of arr reached
@@ -86,7 +86,7 @@ void tail(int fd, uint limit)
         printf(1, "head: read error\n");
         exit();
     }
-    printLines(&lines);
+    printInOrder(&lines);
 }
 
 ushort
