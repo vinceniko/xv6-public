@@ -6,28 +6,44 @@ char buff[512];
 
 struct Cyclic_Arr
 {
-    char **arr;
+    void **arr;
     uint size;
-    uint index;
+    uint index; // refers to next free spot
 };
 
-void addLine(struct Cyclic_Arr *lines, char *const line)
+void addLine(struct Cyclic_Arr *lines, void *const line)
 {
     lines->arr[lines->index] = line;
     if (++lines->index >= lines->size)
         lines->index = 0;
 }
 
+int getLast(struct Cyclic_Arr const *lines)
+{
+    if (lines->index == 0)
+        return lines->size - 1;
+    return lines->index;
+}
+
+void appendLast(struct Cyclic_Arr *lines, char *const line)
+{
+    char *lastLine = lines->arr[getLast(lines)];
+    char *newLine = malloc(strlen(lastLine) + strlen(line) + 1); // + 1 for null
+    strcat(lastLine, newLine);
+}
+
 void printLines(struct Cyclic_Arr *const lines)
 {
-    int i = lines->index;
+    int i, start;
+    i = start = lines->index;
+
     int first = 1;
-    while (i != lines->index || first)
+    while (i != start || first) // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
     {
-        printf(1, lines->arr[i]);
+        printf(1, "%s\n", lines->arr[i]);
         if (++i >= lines->size)
             i = 0;
-        first=0;
+        first = 0;
     }
 }
 
