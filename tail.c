@@ -6,30 +6,50 @@
 
 char buff[512];
 
+// circularArr operates like a circular buffer
+// elements are added using the current index position and it wraps around once the size has been reached
+// functions that act upon CircularArr take care of wrapping around the indices
 struct CircularArr
 {
-    void **arr;
-    uint size;
+    void **arr; // dynamic array to hold n strings as determined by the limit arg passed in the cli
+    uint size; //  equivalent to limit here 
     uint index; // refers to next free spot
 };
 
-// adds an element, sets index to the beginning if size is passed
-void addElem(struct CircularArr *lines, void *const line)
+// returns element to the right of index in the circular array
+int right(int index, int size)
 {
-    // free(lines->arr[lines->index]);
-    // lines->arr[lines->index] = NULL;
-    lines->arr[lines->index] = line;
-    lines->index = (lines->index + 1) % lines->size; // loops around
+    return (index + 1) % size;
+}
+
+// returns element to the right of index in the circular array
+int left(int index, int size)
+{
+    return (index - 1 + size) % size;
 }
 
 // retuns the index of the last inserted elem
-int getLast(struct CircularArr const *lines)
+int getLastIndex(struct CircularArr const *circArr)
 {
-    if (lines->index == 0)
-        return lines->size - 1;
-    return lines->index;
+    return left(circArr->index, circArr->size);
 }
 
+// returns the oldest element which is referred to by the current index
+void *getOldest(struct CircularArr const *circArr)
+{
+    return circArr->arr[circArr->index];
+}
+
+// adds an element, replacing an element after the first loop around
+void addElem(struct CircularArr *circArr, void *const line)
+{
+    if (circArr->arr[circArr->index] != NULL) // init values in first loop over
+        free(circArr->arr[circArr->index]); // free the dynamic strings allocated that will be replaced
+    circArr->arr[circArr->index] = line; // replace
+    circArr->index = right(circArr->index, circArr->size);
+}
+
+// appends src to dest by allocating a new array and returning it
 char* strcat(char* dest, char* src) 
 {
     // make ptr point to the end of destination string
@@ -49,10 +69,10 @@ char* strcat(char* dest, char* src)
 // appends a string to the last inserted string
 void appendLast(struct CircularArr *lines, char *const line)
 {
-    int lastI = getLast(lines);
+    int lastI = getLastIndex(lines);
     char *lastLine = lines->arr[lastI];
     char *newLine = malloc(strlen(lastLine) + strlen(line) + 1); // + 1 for null
-    newLine[0] = '\0';
+    newLine[0] = '\0'; // initial null terminator for allocated but empty string, used as a reference point for first strcat call
     strcat(newLine, lastLine);
     strcat(newLine, line);
 
@@ -63,29 +83,38 @@ void appendLast(struct CircularArr *lines, char *const line)
 }
 
 // prints the elements in the correct order from first inserted to last inserted
-void printInOrder(struct CircularArr *const lines)
+void printInOrder(struct CircularArr *const circArr)
 {
     int i, start;
-    i = start = lines->index;
+    i = start = circArr->index;
 
     int first = 1;
     while (i != start || first) // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
     {
-        printf(1, "%s", lines->arr[i]);
-        i = (i + 1) % lines->size; // loops around
+        printf(1, "%s", circArr->arr[i]);
+        i = right(i, circArr->size); // loops around
         first = 0;
     }
 }
 
-// void init(struct CircularArr *lines)
-// {
-//     int i;
-//     for (i = 0; i < lines->size; i++)
-//     {
-//         lines->arr[i] = malloc(NULL);
-//     }
-// }
+// sticks in Null values into every space in the circular arr. used to later free memory correctly in addElem
+void init(struct CircularArr *circArr)
+{
+    int i;
+    for (i = 0; i < circArr->size; i++)
+        circArr->arr[i] = NULL;
+}
 
+char *createLine(char *buff, int n)
+{
+    char *line = malloc(sizeof(char *) * n + 1);
+    memmove(line, buff, n);
+    line[n] = '\0'; // add the null terminator at the end of the line
+
+    return line;
+}
+
+// tail prints n (limit) lines from the file specified by fd
 void tail(int fd, uint limit)
 {
     int n, i, start, numBytes;
@@ -94,7 +123,7 @@ void tail(int fd, uint limit)
         limit,
         0,
     }; // allocate an arr of size limit which stores lines
-    // init(&lines);
+    init(&lines); // default values in arr to free memory later
 
     while ((n = read(fd, buff, sizeof(buff))) > 0)
     {
@@ -102,21 +131,22 @@ void tail(int fd, uint limit)
         {
             if (buff[i] == '\n') // if the char is a newline
             {
-                char *line = malloc(sizeof(char *) * numBytes);
-                memmove(line, &buff[start], numBytes);
-                start = i + 1; // move ahead one index to after newline
-                numBytes = 0;  // reset numBytes (numBytes will immediately become 1 on next iteration)
+                char *line = createLine(&buff[start], numBytes);
 
                 addElem(&lines, line);
             }
             else if (i == n - 1) // end of buffer will be reached before reading in another new line
-            { // end of arr reached
-                char *line = malloc(sizeof(char *) * numBytes);
-                memmove(line, &buff[start], n - start);
-                start = i + 1; // move ahead one index to after newline
-                numBytes = 0;  // reset numBytes (numBytes will immediately become 1 on next iteration)
+            {
+                int len = n - start + 1;
+                char *line = createLine(&buff[start], len);
 
                 appendLast(&lines, line); // have to append to the last inserted entry since no new line was found
+            }
+
+            if (buff[i] == '\n' || i == n - 1) // either of the two conditions above
+            {
+                start = i + 1; // move ahead one index to after newline
+                numBytes = 0;  // reset numBytes (numBytes will immediately become 1 on next iteration)
             }
         }
     }
