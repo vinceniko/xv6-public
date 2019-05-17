@@ -91,6 +91,8 @@ void printInOrder(struct CircularArr *const circArr)
     int first = 1;
     while (i != start || first) // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
     {
+        if (circArr->arr[i] == NULL) // first null reached means rest until the start (oldest element) are NULLs as well so break
+            break;
         printf(1, "%s", circArr->arr[i]);
         i = right(i, circArr->size); // loops around
         first = 0;
