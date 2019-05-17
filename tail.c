@@ -88,15 +88,13 @@ void printInOrder(struct CircularArr *const circArr)
     int i, start;
     i = start = circArr->index;
 
-    int first = 1;
-    while (i != start || first) // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
-    {
-        if (circArr->arr[i] == NULL) // first null reached means rest until the start (oldest element) are NULLs as well so break
-            break;
-        printf(1, "%s", circArr->arr[i]);
+    do {
+        if (circArr->arr[i] != NULL)
+            printf(1, "%s", circArr->arr[i]);
+        else // found null
+            i = circArr->size-1; // set to end so next statement sets i to 0, will iterate from 0 till index-1 and terminate
         i = right(i, circArr->size); // loops around
-        first = 0;
-    }
+    } while (i != start); // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
 }
 
 // sticks in Null values into every space in the circular arr. used to later free memory correctly in addElem
