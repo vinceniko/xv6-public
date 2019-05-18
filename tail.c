@@ -190,6 +190,9 @@ int main(int argc, char *argv[])
             exit();
         }
         limit = atoi(argv[param]);
+        if (limit == 0) {
+            exit();
+        }
         if (argc <= 2) // no file, only tail and -n
         {
             tail(0, limit);
