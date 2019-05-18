@@ -12,8 +12,8 @@ char buff[512];
 struct CircularArr
 {
     void **arr; // dynamic array to hold n strings as determined by the limit arg passed in the cli
-    uint size; //  equivalent to limit here 
-    uint index; // refers to next free spot
+    int size; //  equivalent to limit here 
+    int index; // refers to next free spot
 };
 
 // returns element to the right of index in the circular array
@@ -86,15 +86,15 @@ void appendLast(struct CircularArr *lines, char *const line)
 void printInOrder(struct CircularArr *const circArr)
 {
     int i, start;
-    i = start = circArr->index;
+    i = start = circArr->index; // oldest element
 
     do {
-        if (circArr->arr[i] != NULL)
+        if (circArr->arr[i] != NULL) // occurs when the file has less lines than limit
             printf(1, "%s", circArr->arr[i]);
-        else // found null
+        else
             i = circArr->size-1; // set to end so next statement sets i to 0, will iterate from 0 till index-1 and terminate
         i = right(i, circArr->size); // loops around
-    } while (i != start); // first is there so it executes in the beginning, then it iterates until the end and loops to the beginning
+    } while (i != start); // iterates from index (which is oldest element unless null) to element before index (which is newest elem)
 }
 
 // sticks in Null values into every space in the circular arr. used to later free memory correctly in addElem
@@ -105,9 +105,10 @@ void init(struct CircularArr *circArr)
         circArr->arr[i] = NULL;
 }
 
+// creates a line from n chars in buff
 char *createLine(char *buff, int n)
 {
-    char *line = malloc(sizeof(char *) * n + 1);
+    char *line = malloc(sizeof(char *) * n + 1);  // n + 1 for null terminator
     memmove(line, buff, n);
     line[n] = '\0'; // add the null terminator at the end of the line
 
@@ -115,7 +116,7 @@ char *createLine(char *buff, int n)
 }
 
 // tail prints n (limit) lines from the file specified by fd
-void tail(int fd, uint limit)
+void tail(int fd, int limit)
 {
     int n, i, start, numBytes;
     struct CircularArr lines = {
